@@ -177,7 +177,7 @@ int add_course()
 
 	printf("\n");
 	printf("\n\t\t\t\t\t    ****************************");
-	printf("\n\t\t\t\t\t    ***    Add New  Course    ***");
+	printf("\n\t\t\t\t\t    ***    Add New Course    ***");
 	printf("\n\t\t\t\t\t    ****************************");
 
 	fp = fopen("courseinfo.bin", "rb");
