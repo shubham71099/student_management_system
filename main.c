@@ -78,7 +78,7 @@ bool take_int_input(int *number)
 
 bool isValidMobileNumber(const char *number) {
     int length = 0, i;
-
+	
     // Check if the input is NULL
     if (number == NULL) 
 	{
@@ -321,7 +321,10 @@ void show_admin_actions(int action)
 		break;
 
 	case 9:
-
+		edit_student();
+		printf("\n\n\t\t\x1b[33m Press any key for return to main menu... \x1b[0m");
+		getch();
+		system("cls");
 		break;
 
 	case 10:
@@ -817,7 +820,7 @@ void edit_teacher()
 			
 
 			printf("\n\t\t\tEnter Teacher's New Name : ");
-			fflush(stdin); // Flush any remaining characters in the input buffer
+			fflush(stdin); 
 			fgets(teacher_info.teacher_name, sizeof(teacher_info.teacher_name), stdin);
 			
 			while(1)
@@ -1160,6 +1163,7 @@ void add_student()
 			{
 				
 				printf("\n\t\t\t Mobile                      :  ");
+				fflush(stdin);
 				if (scanf("%14s", student_mobile) == 1) 
 				{
 	    			// Validation of the mobile number using your isValidMobileNumber function
@@ -1173,6 +1177,13 @@ void add_student()
 						printf("\n\t\t\t\t\x1b[38;5;45m Please Enter 10 Digit Number Only \x1b[0m\n");
 				    }
 				} 
+				else 
+				{
+		            printf("\n\t\t\t\t\x1b[38;5;45m Error reading mobile number \x1b[0m\n");
+		            // Clear the input buffer
+		            int c;
+		            while ((c = getchar()) != '\n' && c != EOF);
+		        }
 				
 			
 			}
@@ -1212,7 +1223,131 @@ void add_student()
 
 void edit_student()
 {
+	print_banner();
+	FILE *fp = NULL;
+	FILE *fp1 = NULL;
+	struct student student_info;
+	int enrollment_no,found=0;
+	char student_mobile[15];
+	char student_email[100];
+	printf("\n");
+	printf("\n\t\t\t\t\t\x1b[38;5;45m      +-------------------------------+ \x1b[0m");
+	printf("\n\t\t\t\t\t\x1b[38;5;45m      |      Edit Student Detail      | \x1b[0m");
+	printf("\n\t\t\t\t\t\x1b[38;5;45m      +-------------------------------+ \x1b[0m");
 	
+	fp = fopen("studentinfo.bin", "rb");
+	if (fp == NULL)
+	{
+		fprintf(stderr, "\n\n\n\n\t\t\t Student List is Empty \n");
+	}
+	
+	fp1 = fopen("temp.bin", "wb");
+	fflush(stdin); 
+	printf("\n\n\n\t\t\tEnter Enrollment No. : ");
+	scanf("%d", &enrollment_no);
+	fflush(stdin); 
+			while (fread(&student_info, sizeof(struct student), 1, fp))
+			{
+				if (student_info.enrollment_no == enrollment_no)
+				{
+					found = 1;
+					printf("\n\t\t\t\t   Enrollment No.     :    %d", student_info.enrollment_no);
+					printf("\n\t\t\t\t   Name               :   \x1b[38;5;45m %s \x1b[0m", student_info.student_name);
+					printf("\n\t\t\t\t   Date of Birth      :    %s", student_info.dob);
+					printf("\n\t\t\t\t   Department         :    %s", student_info.student_course);
+					printf("\n\t\t\t\t   Mobile No.         :    %s", student_info.student_mobile);
+					printf("\n\t\t\t\t   Email-id           :    %s ", student_info.student_email);
+					printf("\n\t\t\t\t   Fees Status        :    %s", student_info.fees);
+					printf("\n\t\t\t\t   Address            :    %s", student_info.student_address);
+					printf("\n");
+					printf("\n\t\t\t\t____________________________________________________________ \n");
+					printf("\n\t\t\t--------------------------------------------------------------------");
+			
+
+					printf("\n\t\t\tEnter Student's Updated Name : ");
+					fflush(stdin); 
+					fgets(student_info.student_name, sizeof(student_info.student_name), stdin);
+					
+					while(1)
+					{
+						
+						printf("\n\t\t\tEnter New Mobile No.     : ");
+						fflush(stdin); 
+						if (scanf("%14s", student_mobile) == 1) 
+						{
+			    			// Validation of the mobile number using your isValidMobileNumber function
+						    if (isValidMobileNumber(student_mobile)) 
+							{
+						        strcpy(student_info.student_mobile, student_mobile);
+						        break;
+						    } 
+							else 
+							{
+								printf("\n\t\t\t\t\x1b[38;5;45m Please Enter 10 Digit Number Only \x1b[0m\n");
+						    }
+						} 
+						
+						fflush(stdin); 
+					}
+					
+					while (1) 
+					{
+				        printf("\n\t\t\tEnter New Email ID       : ");
+				        if (scanf("%99s", student_email) == 1) 
+						{ // Limit input to 99 characters
+				            // Validation of the email address using isValidEmail function
+				            if (isValidEmail(student_email)) 
+							{
+				                strcpy(student_info.student_email, student_email);
+				                break;
+				            } 
+							else 
+							{
+								printf("\n\t\t\t\t\x1b[38;5;45m Please Enter a Valid Email Address \x1b[0m\n");
+				            }
+				        } 
+						else 
+						{
+				            printf("Error reading email address\n");
+				        }
+				
+				        // Clear the input buffer
+				        int c;
+				        while ((c = getchar()) != '\n' && c != EOF);
+				    }
+				    	
+				    	printf("\n\t\t\tNew Address              : ");
+				    	fflush(stdin); 
+						scanf("%50[^\n]", student_info.student_address);
+						
+					found = 1;
+				
+					}
+						fwrite(&student_info, sizeof(struct student), 1, fp1);
+				}
+					
+				fclose(fp);
+				fclose(fp1);
+				
+				if (found)
+				{
+					remove("studentinfo.bin");
+					rename("temp.bin", "studentinfo.bin");
+					printf("\n\t\t\t\x1b[38;5;45m Student Details Updated Successfully !!  \x1b[0m");
+				}
+				if (!found)
+				{
+					printf("\n\n\n");
+					printf("\n\t\t\t\t\x1b[38;5;45m +-------------------------------------------------------------------+ \x1b[0m");
+					printf("\n\t\t\t\t\x1b[38;5;45m |                                                                   | \x1b[0m");
+					printf("\n\t\t\t\t\x1b[38;5;45m |     Sorry ! No Student details found for above Enrollment No      | \x1b[0m");
+					printf("\n\t\t\t\t\x1b[38;5;45m |                                                                   | \x1b[0m");
+					printf("\n\t\t\t\t\x1b[38;5;45m +-------------------------------------------------------------------+ \x1b[0m");
+					printf("\n\n");
+				}
+			
+
+
 }
 void search_student()
 {
@@ -1252,7 +1387,7 @@ void search_student()
 							printf("\n\t\t\t\t   Name               :   \x1b[38;5;45m %s \x1b[0m", student_info.student_name);
 							printf("\n\t\t\t\t   Date of Birth      :    %s", student_info.dob);
 							printf("\n\t\t\t\t   Department         :    %s", student_info.student_course);
-							printf("\n\t\t\t\t   Mobile No.         :    %d", student_info.student_mobile);
+							printf("\n\t\t\t\t   Mobile No.         :    %s", student_info.student_mobile);
 							printf("\n\t\t\t\t   Email-id           :    %s ", student_info.student_email);
 							printf("\n\t\t\t\t   Fees Status        :    %s", student_info.fees);
 							printf("\n\t\t\t\t   Address            :    %s", student_info.student_address);
@@ -1355,7 +1490,7 @@ void view_student()
 					
 			}
 			
-			printf("\n\t\t\t\t\t\x1b[38;5;45m  %s Student List \x1b[0m\n\n",courses[selected_course-1].course_name);
+			printf("\n\t\t\t\t\t\x1b[38;5;45m Student List \x1b[0m\n\n");
 			
 		while (fread(&student_info, sizeof(struct student), 1, fp))
 		{
@@ -1366,7 +1501,7 @@ void view_student()
 					printf("\n\t\t\t\t   Name               :   \x1b[38;5;45m %s \x1b[0m", student_info.student_name);
 					printf("\n\t\t\t\t   Date of Birth      :    %s", student_info.dob);
 					printf("\n\t\t\t\t   Department         :    %s", student_info.student_course);
-					printf("\n\t\t\t\t   Mobile No.         :    %d", student_info.student_mobile);
+					printf("\n\t\t\t\t   Mobile No.         :    %s", student_info.student_mobile);
 					printf("\n\t\t\t\t   Email-id           :    %s ", student_info.student_email);
 					printf("\n\t\t\t\t   Fees Status        :    %s", student_info.fees);
 					printf("\n\t\t\t\t   Address            :    %s", student_info.student_address);
@@ -1375,7 +1510,7 @@ void view_student()
 					printf("\n\t\t\t\t____________________________________________________________ \n");
 			}
 		}		
-		printf("\n\t\t\t\t Total Student in %s  : %d\n",courses[selected_course-1].course_name, count);
+		printf("\n\t\t\t\t Total Student  : %d\n", count);
 	
 	fclose(fp);
 
