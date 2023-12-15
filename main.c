@@ -5,16 +5,27 @@
 #include <stdbool.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 #define MAX_SUBJECTS 6
 #define string_size 100
 
 void print_banner();
+void home();
 void admin_home();
+void show_home_actions(int action);
 void show_admin_actions(int action);
 void adminlogin();
 void adminregister();
 void updateadmindata();
+void teacherlogin();
+void teacher_home(char *id);
+void show_teacher_actions(int action,char *id);
+void show_teacher_profile(char *id);
+void update_teacher_password(char *id);
+void add_student_marks(char *id);
+void studentlogin();
+void student_home(char *id);
 void getPassword(char *password, int max_len);
 int add_course();
 void edit_course();
@@ -63,11 +74,11 @@ struct login
 	char username[20];
 	char password[20];
 };
-
 void main()
 {
 	//	admin_home();
-	adminlogin();
+	//	adminlogin();
+	home();
 }
 
 bool take_int_input(int *number)
@@ -79,8 +90,7 @@ bool take_int_input(int *number)
 	else
 	{
 		printf("\n\t\t\t\t\x1b[38;5;45m Please Enter Number Only... \x1b[0m\n");
-		while (getchar() != '\n')
-			;
+		while (getchar() != '\n');
 		return false;
 	}
 }
@@ -216,6 +226,71 @@ void print_banner()
 	printf("\t\t\t\x1b[38;5;45m ===============         STUDENT MANAGEMENT SYSTEM         ================= \x1b[0m\n");
 	printf("\t\t\t\x1b[38;5;45m =========================================================================== \x1b[0m\n");
 	fflush(stdin);
+}
+
+void home()
+{
+	int choice;
+	while (choice != 4)
+	{
+		print_banner();
+		printf("\n");
+		printf("\n\t\t\t\t\t\t\x1b[38;5;45m +----------------+ \x1b[0m");
+		printf("\n\t\t\t\t\t\t\x1b[38;5;45m |      MENU      | \x1b[0m");
+		printf("\n\t\t\t\t\t\t\x1b[38;5;45m +----------------+ \x1b[0m");
+		printf("\n\n");
+
+		printf("\n\n\t\t\t       (1)  Admin Login ");
+		printf("\n\n\t\t\t       (2)  Teacher Login  ");
+		printf("\n\n\t\t\t       (3)  Student Login  ");
+		printf("\n\n\t\t\t       (4)  Exit       ");
+		fflush(stdin);
+
+		while (1)
+		{
+			printf("\n\n\t\t\t\x1b[38;5;45m Please select your role from above : \x1b[0m");
+
+			if (take_int_input(&choice))
+			{
+				if (choice >= 1 && choice <= 4)
+				{
+					show_home_actions(choice);
+					break;
+				}
+				else
+				{
+					printf("\n\t\t\t\t Please Enter a Valid Choice... ");
+				}
+			}
+		}
+	}
+	
+}
+
+void show_home_actions(int action)
+{
+	switch (action)
+	{
+	case 1:
+		adminlogin();
+		system("cls");
+		break;
+
+	case 2:
+		teacherlogin();
+		system("cls");
+		break;
+
+	case 3:
+		studentlogin();
+		system("cls");
+		break;
+
+	case 4:
+		break;
+	default:
+		break;
+	}
 }
 
 void admin_home()
@@ -952,6 +1027,7 @@ void view_teacher()
 		printf("\n\t\t\t\t   Date of Joining   :    %s", teacher_info.teacher_doj);
 		printf("\n\t\t\t\t   Mobile No.        :    %s", teacher_info.teacher_mobile);
 		printf("\n\t\t\t\t   Email-id          :    %s ", teacher_info.teacher_email);
+		printf("\n\t\t\t\t   Password          :    %s ", teacher_info.teacher_password);
 		printf("\n\t\t\t\t   Salary            :    %d", teacher_info.teacher_salary);
 		printf("\n");
 		printf("\n\t\t\t\t____________________________________________________________ \n");
@@ -1838,7 +1914,7 @@ void updateadmindata()
 	printf("\n\t\t\t\t\t\x1b[38;5;45m      |    UPDATE ADMIN CREDENTIALS   | \x1b[0m");
 	printf("\n\t\t\t\t\t\x1b[38;5;45m      +-------------------------------+ \x1b[0m");
 
-	printf("\n\n\t\t\tEnter new username: ");
+	printf("\n\n\n\t\t\tEnter new username: ");
 	scanf("%s", user.username);
 
 	printf("\n\t\t\tEnter new password: ");
@@ -1849,4 +1925,283 @@ void updateadmindata()
 	fclose(fp);
 
 	printf("\n\n\n\t\t\t\x1b[33m Admin account updated successfully! Press any key to continue...\x1b[0m");
+}
+
+void teacherlogin()
+{
+    print_banner();
+    struct teacher teacher_info;
+    FILE *fp;
+    char id[20], pass[20];
+    int loginSuccess = 0;
+
+    fp = fopen("teacherinfo.bin", "rb");
+    if (fp == NULL)
+    {
+        printf("\n\n\n\n\n\t\t\t\x1b[33m Teacher login credentials not found... \x1b[0m");
+        getch();
+        home();
+        return;
+    }
+    printf("\n");
+    printf("\n\t\t\t\t\t\x1b[38;5;45m      +---------------------------+ \x1b[0m");
+    printf("\n\t\t\t\t\t\x1b[38;5;45m      |       TEACHER LOGIN       | \x1b[0m");
+    printf("\n\t\t\t\t\t\x1b[38;5;45m      +---------------------------+ \x1b[0m");
+
+    printf("\n\n\n\t\t\t Enter Username : ");
+    scanf("%19s", id);  // Limit the input length to prevent buffer overflow
+    printf("\n\t\t\t Enter Password : ");
+    getPassword(pass, sizeof(pass));
+
+    while (fread(&teacher_info, sizeof(struct teacher), 1, fp) == 1)
+    {
+        if ((strcmp(teacher_info.teacher_email, id) == 0) && (strcmp(teacher_info.teacher_password, pass) == 0))
+        {
+            loginSuccess = 1;
+            break;
+        }
+    }
+    if (loginSuccess)
+    {
+        teacher_home(id);
+    }
+    else
+    {
+        printf("\n\n\t\t\x1b[33m Wrong username or password... \x1b[0m");
+        getch();
+    }
+    fclose(fp);
+}
+
+void teacher_home(char *id)
+{
+	print_banner();
+	struct teacher teacher_info;
+	FILE *fp;
+	int choice;
+	
+	while (choice != 4)
+	{	
+		print_banner();
+		fp = fopen("teacherinfo.bin", "rb");
+		printf("\n");
+		printf("\n\t\t\t\t\t\t\x1b[38;5;45m +----------------+ \x1b[0m");
+		printf("\n\t\t\t\t\t\t\x1b[38;5;45m |      MENU      | \x1b[0m");
+		printf("\n\t\t\t\t\t\t\x1b[38;5;45m +----------------+ \x1b[0m");
+			
+		while (fread(&teacher_info, sizeof(struct teacher), 1, fp))
+		{
+			if (strcmp(teacher_info.teacher_email, id) == 0)
+			{
+				printf("\n\n\t\t\t Welcome, \x1b[38;5;45m %s \x1b[0m", teacher_info.teacher_name);
+			}
+		}
+		fclose(fp);
+		printf("\n\n\n\t\t\t       (1)  View Profile ");
+		printf("\n\n\t\t\t       (2)  Add Student Marks       ");
+		printf("\n\n\t\t\t       (3)  Change Password  ");
+		printf("\n\n\t\t\t       (4)  Exit       ");
+		fflush(stdin);
+		while (1)
+		{
+			printf("\n\n\t\t\t\x1b[38;5;45m Please enter your choice : \x1b[0m");
+			fflush(stdin);
+			if (take_int_input(&choice))
+			{
+				if (choice >= 1 && choice <= 4)
+				{
+					show_teacher_actions(choice,id);
+					break;
+				}
+				else
+				{
+					printf("\n\t\t\t\t Please Enter a Valid Choice... ");
+				}
+			}
+		}
+	}		
+	getch();	
+}
+void show_teacher_actions(int action,char *id)
+{
+	switch (action)
+	{
+		case 1:
+			show_teacher_profile(id);
+			printf("\n\t\t\t\x1b[33m Press any key for return to main menu... \x1b[0m");
+			getch();
+			break;
+		case 2:
+			add_student_marks(id);
+			printf("\n\n\t\t\t\x1b[33m Press any key for return to main menu... \x1b[0m");
+			getch();
+			break;
+		case 3:
+			update_teacher_password(id);
+			printf("\n\n\n\t\t\t\x1b[33m Press any key for return to main menu... \x1b[0m");
+			getch();
+			break;
+		case 4:
+			break;		
+		default:
+			break;
+	}
+}
+void show_teacher_profile(char *id)
+{
+	print_banner();
+	struct teacher teacher_info;
+	FILE *fp;	
+	fp = fopen("teacherinfo.bin", "rb");
+	printf("\n");
+	printf("\n\t\t\t\t\t\t\x1b[38;5;45m +----------------+ \x1b[0m");
+	printf("\n\t\t\t\t\t\t\x1b[38;5;45m |    PROFILE     | \x1b[0m");
+	printf("\n\t\t\t\t\t\t\x1b[38;5;45m +----------------+ \x1b[0m");
+	while (fread(&teacher_info, sizeof(struct teacher), 1, fp))
+	{
+		if (strcmp(teacher_info.teacher_email, id) == 0)
+		{
+			printf("\n\n\t\t\t Welcome, \x1b[38;5;45m %s \x1b[0m", teacher_info.teacher_name);
+			printf("\n\n\t\t\t\t   ID               :    %d", teacher_info.teacher_id);
+			printf("\n\n\t\t\t\t   Name             :   \x1b[38;5;45m %s \x1b[0m", teacher_info.teacher_name);
+			printf("\n\n\t\t\t\t   Department       :   \x1b[38;5;45m %s \x1b[0m", teacher_info.teacher_course);
+			printf("\n\t\t\t\t   Date of Joining  :    %s", teacher_info.teacher_doj);
+			printf("\n\n\t\t\t\t   Mobile No.       :    %s", teacher_info.teacher_mobile);
+			printf("\n\n\t\t\t\t   Email-id         :    %s ", teacher_info.teacher_email);
+			printf("\n\n\t\t\t\t   Salary           :    %d", teacher_info.teacher_salary);
+			printf("\n");
+			printf("\n\t\t\t\t_____________________________________________________ \n");
+		}
+	}
+	fclose(fp);
+}
+void update_teacher_password(char *id)
+{
+	print_banner();
+    struct teacher teacher_info;
+    FILE *fp;
+    fp = fopen("teacherinfo.bin", "r+b");
+    printf("\n");
+    printf("\n\t\t\t\t\t\t\x1b[38;5;45m +---------------------+ \x1b[0m");
+    printf("\n\t\t\t\t\t\t\x1b[38;5;45m |   CHANGE PASSWORD   | \x1b[0m");
+    printf("\n\t\t\t\t\t\t\x1b[38;5;45m +---------------------+ \x1b[0m");
+
+    if (fp == NULL) 
+	{
+        fprintf(stderr, "\n\n\n\n\t\t\t Teacher's List is Empty \n");
+        return;
+    }
+    while (fread(&teacher_info, sizeof(struct teacher), 1, fp) == 1) 
+	{
+        if (strcmp(teacher_info.teacher_email, id) == 0) 
+		{
+			printf("\n\n\t\t\t Welcome, \x1b[38;5;45m %s \x1b[0m", teacher_info.teacher_name);
+        	printf("\n\n\n\t\t\tEnter new password: ");
+			getPassword(teacher_info.teacher_password, sizeof(teacher_info.teacher_password));
+            fseek(fp, -(long int)sizeof(struct teacher), SEEK_CUR);  // Move the file pointer back
+            fwrite(&teacher_info, sizeof(struct teacher), 1, fp);
+            break;
+        }
+    }
+    fclose(fp);
+    printf("\n\n\n\t\t\t\x1b[38;5;45m Password Updated Successfully !!  \x1b[0m");
+}
+void add_student_marks(char *id) 
+{
+	print_banner();
+    FILE *fp, *tempFile;
+    struct teacher teacher_info;
+    struct student student_info;
+    int enrollment_no, found = 0, i;
+
+    FILE *fp1 = fopen("teacherinfo.bin", "rb");
+    if (fp1 == NULL) 
+	{
+        fprintf(stderr, "\n\n\n\n\t\t\t Teacher's List is Empty \n");
+        return;
+    }
+    while (fread(&teacher_info, sizeof(struct teacher), 1, fp1) == 1) 
+	{
+        if (strcmp(teacher_info.teacher_email, id) == 0) {
+            break; // match teacher & student course
+        }
+    }
+    fclose(fp1);
+
+    fp = fopen("studentinfo.bin", "rb");
+    tempFile = fopen("temp.bin", "wb");
+    printf("\n");
+    printf("\n\t\t\t\t\t\t\x1b[38;5;45m +----------------------+ \x1b[0m");
+    printf("\n\t\t\t\t\t\t\x1b[38;5;45m |  ADD STUDENT MARKS   | \x1b[0m");
+    printf("\n\t\t\t\t\t\t\x1b[38;5;45m +----------------------+ \x1b[0m");
+    printf("\n\n\t\t\tEnter Enrollment No : ");
+    scanf("%d", &enrollment_no);
+	    while (fread(&student_info, sizeof(struct student), 1, fp)) 
+		{
+	        if (student_info.enrollment_no == enrollment_no && strcmp(student_info.student_course, teacher_info.teacher_course) == 0) 
+			{
+	            found = 1;
+	            printf("\n\t\t\t____________________________________________________________");
+	            printf("\n\t\t\t   Enrollment No.    :   \x1b[38;5;45m %d \x1b[0m", student_info.enrollment_no);
+	            printf("\n\t\t\t   Name              :   \x1b[38;5;45m %s \x1b[0m", student_info.student_name);
+	            printf("\t\t\t   Department        :   \x1b[38;5;45m %s \x1b[0m", student_info.student_course);
+	            for (i = 0; i < 6; i++) 
+				{
+	                printf("\n\t\t\t    %s  : %d", student_info.subject[i],student_info.marks[i]);
+	            }
+	            printf("\n\t\t\t____________________________________________________________ \n");
+	
+	            char confirm;
+	            printf("\n\t\t\t   Do you want to proceed ? (Y/N): ");
+	            scanf(" %c", &confirm);
+	            if (confirm == 'y' || confirm == 'Y') 
+				{
+	                printf("\n\t\t\t Enter Marks for below subjects \n");
+	                for (i = 0; i < 6; i++) 
+					{
+	                    printf("\n\t\t\t %s  :  ", student_info.subject[i]);
+	                    while (!take_int_input(&student_info.marks[i])) 
+						{
+	                        printf("\n\t\t\t %s  :", student_info.subject[i]);
+	                    }
+	                }
+	                printf("\n\t\t\t Marks updated successfully \n");
+	                fwrite(&student_info, sizeof(struct student), 1, tempFile);
+	            } 
+				else 
+				{
+					printf("\n\t\t\t Student marks not updated.... ");
+	                fwrite(&student_info, sizeof(struct student), 1, tempFile);
+	            }
+	        } 
+			else 
+			{
+	            fwrite(&student_info, sizeof(struct student), 1, tempFile);
+	        }
+	    }
+
+	    if (!found) 
+		{
+	        	printf("\n\n\n");
+				printf("\n\t\t\t\t\x1b[38;5;45m +----------------------------------------------------------------------+ \x1b[0m");
+				printf("\n\t\t\t\t\x1b[38;5;45m |                                                                      | \x1b[0m");
+				printf("\n\t\t\t\t\x1b[38;5;45m |    Sorry ! Above Enrollment No. doesn't exist in your Department     | \x1b[0m");
+				printf("\n\t\t\t\t\x1b[38;5;45m |                                                                      | \x1b[0m");
+				printf("\n\t\t\t\t\x1b[38;5;45m +----------------------------------------------------------------------+ \x1b[0m");
+				printf("\n\n");
+	    }
+	    fclose(fp);
+	    fclose(tempFile);
+	    remove("studentinfo.bin");
+	    rename("temp.bin", "studentinfo.bin");
+}
+void studentlogin()
+{
+	print_banner();
+	printf("\n working.... ");
+	getch();
+}
+void student_home(char *id)
+{
+	
 }
