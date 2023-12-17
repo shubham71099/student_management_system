@@ -1871,36 +1871,6 @@ void fees_payment()
 		printf("\n\n");
 	}
 }
-//void fees_pending_list()
-//{
-//	print_banner();
-//	FILE *fp = NULL;
-//	struct student student_info;
-//	int found = 0;
-//	printf("\n");
-//	printf("\n\t\t\t\t\t\x1b[38;5;45m      +---------------------------+ \x1b[0m");
-//	printf("\n\t\t\t\t\t\x1b[38;5;45m      |     Fees Pending List     | \x1b[0m");
-//	printf("\n\t\t\t\t\t\x1b[38;5;45m      +---------------------------+ \x1b[0m");
-//
-//	fp = fopen("studentinfo.bin", "rb");
-//	if (fp == NULL)
-//	{
-//		fprintf(stderr, "\n\n\n\n\t\t\t Student List is Empty \n");
-//	}
-//		printf("\n\n\t Enrollment No \t\t Name \t Department ");
-//		printf("\n\n\t---------------------------------------------------------------------------");
-//		while (fread(&student_info, sizeof(struct student), 1, fp))
-//		{
-//			if (strcmp(student_info.fees, "Unpaid") == 0)
-//			{
-//				printf("\n\t  %d  %s  %s" , student_info.enrollment_no,student_info.student_name,student_info.student_course);
-//				found = 1;
-//			}
-//			
-//		}
-//	
-//	fclose(fp);
-//}
 
 void fees_pending_list()
 {
