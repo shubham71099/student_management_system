@@ -40,9 +40,11 @@ void search_student();
 void view_student();
 void delete_student();
 void fees_payment();
+void fees_pending_list();
 bool take_int_input(int *number);
 bool isValidMobileNumber(const char *number);
 bool isValidEmail(const char *email);
+bool unique_email(int no,const char *email);
 int isValidName(const char *name);
 int isLeapYear(int year);
 int isValidDate(int day, int month, int year);
@@ -182,6 +184,51 @@ bool isValidEmail(const char *email)
 	return true;
 }
 
+bool unique_email(int no,const char *email)
+{
+	if(no==1)
+	{
+		struct teacher teacher_info;
+	    FILE *fp = fopen("teacherinfo.bin", "rb");
+	    if (fp == NULL)
+	    {
+	        perror("Error opening file");
+	        return false;
+	    } 
+	    while (fread(&teacher_info, sizeof(struct teacher), 1, fp) == 1)
+		{
+	        if ((strcmp(teacher_info.teacher_email, email) == 0))
+	        {
+	        	fclose(fp);
+	        	return true;
+			}
+	    }
+	    fclose(fp);
+	    return false;
+	}
+	if(no==2)
+	{
+		struct student student_info;
+		FILE *fp = fopen("studentinfo.bin", "rb");
+		if (fp == NULL)
+	    {
+	        perror("Error opening file");
+	        return false;
+	    }
+		while (fread(&student_info, sizeof(struct student), 1, fp) == 1)
+		{
+	        if ((strcmp(student_info.student_email, email) == 0))
+	        {
+	        	fclose(fp);
+	        	return true;
+			}
+	    }
+	    fclose(fp);
+	    return false; 
+	}
+	
+}
+
 int isValidName(const char *name)
 {
 	if (name == NULL)
@@ -296,7 +343,7 @@ void show_home_actions(int action)
 void admin_home()
 {
 	int choice;
-	while (choice != 15)
+	while (choice != 16)
 	{
 		print_banner();
 		printf("\n");
@@ -318,8 +365,9 @@ void admin_home()
 		printf("\n\t\t\t       (11) List of Students ");
 		printf("\n\t\t\t       (12) Delete Student Details  ");
 		printf("\n\t\t\t       (13) Fees Payment  ");
-		printf("\n\t\t\t       (14) Update Userid & Password ");
-		printf("\n\t\t\t       (15) Exit       ");
+		printf("\n\t\t\t       (14) Fees Pending List  ");
+		printf("\n\t\t\t       (15) Update Userid & Password ");
+		printf("\n\t\t\t       (16) Exit       ");
 		fflush(stdin);
 
 		while (1)
@@ -328,7 +376,7 @@ void admin_home()
 
 			if (take_int_input(&choice))
 			{
-				if (choice >= 1 && choice <= 15)
+				if (choice >= 1 && choice <= 16)
 				{
 					show_admin_actions(choice);
 					break;
@@ -451,11 +499,18 @@ void show_admin_actions(int action)
 		break;
 
 	case 14:
+		fees_pending_list();
+		printf("\n\n\t\t\x1b[33m Press any key for return to main menu... \x1b[0m");
+		getch();
+		system("cls");
+		break;
+		
+	case 15:
 		updateadmindata();
 		getch();
 		system("cls");
 		break;
-	case 15:
+	case 16:
 		break;
 	default:
 		break;
@@ -801,11 +856,18 @@ void add_teacher()
 		if (scanf("%99s", teacher_email) == 1)
 		{ // Limit input to 99 characters
 			// Validation of the email address using isValidEmail function
-			if (isValidEmail(teacher_email))
-			{
-				strcpy(teacher_info.teacher_email, teacher_email);
-				break;
-			}
+			if(isValidEmail(teacher_email))
+            {
+                if (unique_email(1,teacher_email))
+                {
+                    printf("\n\t\t\t\x1b[38;5;45m Email is already in use. Please enter another email. \x1b[0m\n");
+                }
+                else
+                {
+                    strcpy(teacher_info.teacher_email, teacher_email);
+                    break;
+                }
+            }
 			else
 			{
 				printf("\n\t\t\t\t\x1b[38;5;45m Please Enter a Valid Email Address \x1b[0m\n");
@@ -1219,8 +1281,15 @@ void add_student()
 
 			if (isValidEmail(student_email))
 			{
-				strcpy(student_info.student_email, student_email);
-				break;
+				if (unique_email(2,student_email))
+                {
+                    printf("\n\t\t\t\x1b[38;5;45m Email is already in use. Please enter another email. \x1b[0m\n");
+                }
+                else
+                {
+                    strcpy(student_info.student_email, student_email);
+					break;
+                }
 			}
 			else
 			{
@@ -1464,6 +1533,7 @@ void search_student()
 						printf("\n\t\t\t\t   Department         :    %s", student_info.student_course);
 						printf("\n\t\t\t\t   Mobile No.         :    %s", student_info.student_mobile);
 						printf("\n\t\t\t\t   Email-id           :    %s ", student_info.student_email);
+						printf("\n\t\t\t\t   Password           :    %s ", student_info.student_password);
 						printf("\n\t\t\t\t   Fees Status        :    %s", student_info.fees);
 						printf("\n\t\t\t\t   Address            :    %s", student_info.student_address);
 						printf("\n\n\t\t\t\t____________________________________________________________ \n");
@@ -1502,6 +1572,7 @@ void search_student()
 						printf("\n\t\t\t\t   Department         :    %s", student_info.student_course);
 						printf("\n\t\t\t\t   Mobile No.         :    %s", student_info.student_mobile);
 						printf("\n\t\t\t\t   Email-id           :    %s ", student_info.student_email);
+						printf("\n\t\t\t\t   Password           :    %s ", student_info.student_password);
 						printf("\n\t\t\t\t   Fees Status        :    %s", student_info.fees);
 						printf("\n\t\t\t\t   Address            :    %s", student_info.student_address);
 
@@ -1800,6 +1871,111 @@ void fees_payment()
 		printf("\n\n");
 	}
 }
+//void fees_pending_list()
+//{
+//	print_banner();
+//	FILE *fp = NULL;
+//	struct student student_info;
+//	int found = 0;
+//	printf("\n");
+//	printf("\n\t\t\t\t\t\x1b[38;5;45m      +---------------------------+ \x1b[0m");
+//	printf("\n\t\t\t\t\t\x1b[38;5;45m      |     Fees Pending List     | \x1b[0m");
+//	printf("\n\t\t\t\t\t\x1b[38;5;45m      +---------------------------+ \x1b[0m");
+//
+//	fp = fopen("studentinfo.bin", "rb");
+//	if (fp == NULL)
+//	{
+//		fprintf(stderr, "\n\n\n\n\t\t\t Student List is Empty \n");
+//	}
+//		printf("\n\n\t Enrollment No \t\t Name \t Department ");
+//		printf("\n\n\t---------------------------------------------------------------------------");
+//		while (fread(&student_info, sizeof(struct student), 1, fp))
+//		{
+//			if (strcmp(student_info.fees, "Unpaid") == 0)
+//			{
+//				printf("\n\t  %d  %s  %s" , student_info.enrollment_no,student_info.student_name,student_info.student_course);
+//				found = 1;
+//			}
+//			
+//		}
+//	
+//	fclose(fp);
+//}
+
+void fees_pending_list()
+{
+    print_banner();
+    struct course courses[50];
+    struct student student_info;
+    int selected_course, i, count = 0;
+    FILE *fp_courses = fopen("courseinfo.bin", "rb");
+    
+    if (fp_courses == NULL)
+    {
+        fprintf(stderr, "\n\n\n\n\t\t\t Course List is Empty \n");
+        return;
+    }
+
+    int numCourses = 0;
+    while (fread(&courses[numCourses], sizeof(struct course), 1, fp_courses) == 1)
+    {
+        (numCourses)++;
+    }
+
+    fclose(fp_courses);
+
+    printf("\n");
+    printf("\n\t\t\t\t\t\x1b[38;5;45m      +---------------------------+ \x1b[0m");
+    printf("\n\t\t\t\t\t\x1b[38;5;45m      |     Fees Pending List     | \x1b[0m");
+    printf("\n\t\t\t\t\t\x1b[38;5;45m      +---------------------------+ \x1b[0m");
+
+    FILE *fp_students = fopen("studentinfo.bin", "rb");
+    if (fp_students == NULL)
+    {
+        fprintf(stderr, "\n\n\n\n\t\t\t Student List is Empty \n");
+        return;
+    }
+
+    
+    for (i = 0; i < numCourses; i++)
+    {
+        printf("\n\t\t\t     (%d) %s ", i + 1, courses[i].course_name);
+    }
+
+    while (1)
+    {
+        printf("\n\n\t\t\t Select Course From Above List : ");
+
+        if (take_int_input(&selected_course))
+        {
+            if (selected_course >= 1 && selected_course <= numCourses)
+            {
+                break;
+            }
+            else
+            {
+                printf("\n\t\t\t\t\x1b[38;5;45m Invalid Choice!! Please select from the options provided. \x1b[0m");
+            }
+        }
+    }
+    printf("\n\t\t\t-------------------------------------------------------------------");
+	printf("\n\t\t\t Enrollment No \t\t Name ");
+    printf("\n\t\t\t-------------------------------------------------------------------\n");
+    while (fread(&student_info, sizeof(struct student), 1, fp_students))
+    {
+        if (strcmp(student_info.student_course, courses[selected_course - 1].course_name) == 0 &&
+            strcmp(student_info.fees, "Unpaid") == 0)
+        {
+            count++;
+            printf("\n\t\t\t  %d  \t\t %s ", student_info.enrollment_no, student_info.student_name);
+        }
+    }
+	printf("\n\n\t\t\t-------------------------------------------------------------------");
+    printf("\n\t\t\t Total Students : %d\n", count);
+    fclose(fp_students);
+}
+
+
 void getPassword(char *password, int max_len)
 {
 	int i = 0;
@@ -1948,7 +2124,7 @@ void teacherlogin()
     printf("\n\t\t\t\t\t\x1b[38;5;45m      |       TEACHER LOGIN       | \x1b[0m");
     printf("\n\t\t\t\t\t\x1b[38;5;45m      +---------------------------+ \x1b[0m");
 
-    printf("\n\n\n\t\t\t Enter Username : ");
+    printf("\n\n\n\t\t\t Enter Email-id : ");
     scanf("%19s", id);  // Limit the input length to prevent buffer overflow
     printf("\n\t\t\t Enter Password : ");
     getPassword(pass, sizeof(pass));
