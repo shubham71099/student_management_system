@@ -26,7 +26,12 @@ void update_teacher_password(char *id);
 void add_student_marks(char *id);
 void studentlogin();
 void student_home(char *id);
+void show_student_actions(int action,char *id);
+void show_student_profile(char *id);
+void update_student_password(char *id);
+void view_student_result(char *id);
 void getPassword(char *password, int max_len);
+void clear_input_buffer();
 int add_course();
 void edit_course();
 void view_course();
@@ -82,7 +87,11 @@ void main()
 	//	adminlogin();
 	home();
 }
-
+void clear_input_buffer()
+{
+	int c;
+	while ((c = getchar()) != '\n' && c != EOF);
+}
 bool take_int_input(int *number)
 {
 	if (scanf("%d", number) == 1)
@@ -93,6 +102,7 @@ bool take_int_input(int *number)
 	{
 		printf("\n\t\t\t\t\x1b[38;5;45m Please Enter Number Only... \x1b[0m\n");
 		while (getchar() != '\n');
+		clear_input_buffer();
 		return false;
 	}
 }
@@ -330,6 +340,7 @@ void show_home_actions(int action)
 
 	case 3:
 		studentlogin();
+		getch();
 		system("cls");
 		break;
 
@@ -2165,8 +2176,7 @@ void teacher_home(char *id)
 				}
 			}
 		}
-	}		
-	getch();	
+	}			
 }
 void show_teacher_actions(int action,char *id)
 {
@@ -2188,7 +2198,7 @@ void show_teacher_actions(int action,char *id)
 			getch();
 			break;
 		case 4:
-			break;		
+			break;	
 		default:
 			break;
 	}
@@ -2291,6 +2301,7 @@ void add_student_marks(char *id)
 	            printf("\n\t\t\t   Enrollment No.    :   \x1b[38;5;45m %d \x1b[0m", student_info.enrollment_no);
 	            printf("\n\t\t\t   Name              :   \x1b[38;5;45m %s \x1b[0m", student_info.student_name);
 	            printf("\t\t\t   Department        :   \x1b[38;5;45m %s \x1b[0m", student_info.student_course);
+	            printf("\n");
 	            for (i = 0; i < 6; i++) 
 				{
 	                printf("\n\t\t\t    %s  : %d", student_info.subject[i],student_info.marks[i]);
@@ -2302,14 +2313,32 @@ void add_student_marks(char *id)
 	            scanf(" %c", &confirm);
 	            if (confirm == 'y' || confirm == 'Y') 
 				{
-	                printf("\n\t\t\t Enter Marks for below subjects \n");
+	                printf("\n\t\t\t Enter Marks for below subjects(out of 100) \n");
 	                for (i = 0; i < 6; i++) 
 					{
-	                    printf("\n\t\t\t %s  :  ", student_info.subject[i]);
-	                    while (!take_int_input(&student_info.marks[i])) 
+						printf("\n\t\t\t %s  :  ", student_info.subject[i]);
+				        while (1) 
 						{
-	                        printf("\n\t\t\t %s  :", student_info.subject[i]);
-	                    }
+				            if (take_int_input(&student_info.marks[i])) 
+							{
+				                if (student_info.marks[i] >= 0 && student_info.marks[i] <= 100) 
+								{
+				                    break;
+				                } 
+								else 
+								{
+				                    printf("\n\t\t\t Invalid input! Marks should be between 0 and 100. Please try again.\n");
+				                    printf("\n\t\t\t %s  :  ", student_info.subject[i]);
+				                    clear_input_buffer();
+				                }
+				            } 
+							else 
+							{
+				                printf("\n\t\t\t Invalid input! Please enter a valid No..\n");
+				                printf("\n\t\t\t %s  :  ", student_info.subject[i]);
+				            }
+				        }
+
 	                }
 	                printf("\n\t\t\t Marks updated successfully \n");
 	                fwrite(&student_info, sizeof(struct student), 1, tempFile);
@@ -2344,10 +2373,207 @@ void add_student_marks(char *id)
 void studentlogin()
 {
 	print_banner();
-	printf("\n working.... ");
-	getch();
+    struct student student_info;
+    FILE *fp;
+    char id[20], pass[20];
+    int loginSuccess = 0;
+
+    fp = fopen("studentinfo.bin", "rb");
+    if (fp == NULL)
+    {
+        printf("\n\n\n\n\n\t\t\t\x1b[33m Student login credentials not found... \x1b[0m");
+        getch();
+        return;
+    }
+    printf("\n");
+    printf("\n\t\t\t\t\t\x1b[38;5;45m      +---------------------------+ \x1b[0m");
+    printf("\n\t\t\t\t\t\x1b[38;5;45m      |       STUDENT LOGIN       | \x1b[0m");
+    printf("\n\t\t\t\t\t\x1b[38;5;45m      +---------------------------+ \x1b[0m");
+
+    printf("\n\n\n\t\t\t Enter Email-id : ");
+    scanf("%19s", id);
+    printf("\n\t\t\t Enter Password : ");
+    getPassword(pass, sizeof(pass));
+
+    while (fread(&student_info, sizeof(struct student), 1, fp) == 1)
+    {
+        if ((strcmp(student_info.student_email, id) == 0) && (strcmp(student_info.student_password, pass) == 0))
+        {
+            loginSuccess = 1;
+            break;
+        }
+    }
+    if (loginSuccess)
+    {
+        student_home(id);
+    }
+    else
+    {
+        printf("\n\n\t\t\x1b[33m Wrong username or password... \x1b[0m");
+        getch();       
+    }
+    fclose(fp);
 }
+
 void student_home(char *id)
 {
+	print_banner();
+	struct student student_info;
+    FILE *fp;
+    int choice;
 	
+	while (choice != 4)
+	{	
+		print_banner();
+		fp = fopen("studentinfo.bin", "rb");
+		printf("\n");
+		printf("\n\t\t\t\t\t\t\x1b[38;5;45m +----------------+ \x1b[0m");
+		printf("\n\t\t\t\t\t\t\x1b[38;5;45m |      MENU      | \x1b[0m");
+		printf("\n\t\t\t\t\t\t\x1b[38;5;45m +----------------+ \x1b[0m");
+			
+		while (fread(&student_info, sizeof(struct student), 1, fp))
+		{
+			if (strcmp(student_info.student_email, id) == 0)
+			{
+				printf("\n\n\t\t\t Welcome, \x1b[38;5;45m %s \x1b[0m", student_info.student_name);
+			}
+		}
+		fclose(fp);
+		printf("\n\n\n\t\t\t       (1)  View Profile ");
+		printf("\n\n\t\t\t       (2)  View Result       ");
+		printf("\n\n\t\t\t       (3)  Change Password  ");
+		printf("\n\n\t\t\t       (4)  Exit       ");
+		fflush(stdin);
+		while (1)
+		{
+			printf("\n\n\t\t\t\x1b[38;5;45m Please enter your choice : \x1b[0m");
+			fflush(stdin);
+			if (take_int_input(&choice))
+			{
+				if (choice >= 1 && choice <= 4)
+				{
+					show_student_actions(choice,id);
+					break;
+				}
+				else
+				{
+					printf("\n\t\t\t\t Please Enter a Valid Choice... ");
+				}
+			}
+		}
+	}			 
+}
+
+void show_student_actions(int action,char *id)
+{
+	switch (action)
+	{
+		case 1:
+			show_student_profile(id);
+			printf("\n\t\t\t\x1b[33m Press any key for return to main menu... \x1b[0m");
+			getch();
+			break;
+		case 2:
+			view_student_result(id);
+			printf("\n\n\t\t\t\x1b[33m Press any key for return to main menu... \x1b[0m");
+			getch();
+			break;
+		case 3:
+			update_student_password(id);
+			printf("\n\n\n\t\t\t\x1b[33m Press any key for return to main menu... \x1b[0m");
+			getch();
+			break;
+		case 4:
+			break;	
+		default:
+			break;
+	}
+}
+
+void show_student_profile(char *id)
+{
+	print_banner();
+	struct student student_info;
+	FILE *fp;	
+	fp = fopen("studentinfo.bin", "rb");
+	printf("\n");
+	printf("\n\t\t\t\t\t\t\x1b[38;5;45m +----------------+ \x1b[0m");
+	printf("\n\t\t\t\t\t\t\x1b[38;5;45m |    PROFILE     | \x1b[0m");
+	printf("\n\t\t\t\t\t\t\x1b[38;5;45m +----------------+ \x1b[0m");
+	while (fread(&student_info, sizeof(struct student), 1, fp))
+	{
+		if (strcmp(student_info.student_email, id) == 0)
+		{
+			printf("\n\n\t\t\t Welcome, \x1b[38;5;45m %s \x1b[0m", student_info.student_name);
+			printf("\n\n\t\t\t\t   Enrollment No.   :   \x1b[38;5;45m %d \x1b[0m", student_info.enrollment_no);
+			printf("\n\n\t\t\t\t   Name             :    %s", student_info.student_name);
+			printf("\n\n\t\t\t\t   Department       :    %s", student_info.student_course);
+			printf("\n\n\t\t\t\t   Date of Birth    :    %s", student_info.dob);
+			printf("\n\n\t\t\t\t   Mobile No.       :    %s", student_info.student_mobile);
+			printf("\n\n\t\t\t\t   Email-id         :    %s", student_info.student_email);
+			printf("\n\n\t\t\t\t   Address          :    %s", student_info.student_address);
+			printf("\n");
+			printf("\n\t\t\t\t_____________________________________________________ \n");
+		}
+	}
+	fclose(fp);
+}
+
+void view_student_result(char *id)
+{
+	print_banner();
+	struct student student_info;
+	FILE *fp;
+	printf("\n");
+	printf("\n\t\t\t\t\t\t\x1b[38;5;45m +----------------+ \x1b[0m");
+	printf("\n\t\t\t\t\t\t\x1b[38;5;45m |     RESULT     | \x1b[0m");
+	printf("\n\t\t\t\t\t\t\x1b[38;5;45m +----------------+ \x1b[0m");	
+	fp = fopen("studentinfo.bin", "rb");
+	int i,totalMarks = 0;
+	 	while (fread(&student_info, sizeof(struct student), 1, fp)) 
+		{
+				if (strcmp(student_info.student_email, id) == 0)
+				{
+					printf("\n\n\t\t\t--------------------------------------------------------------------------");
+					printf("\n\t\t\t ENROLLMENT No. :  %-5d ", student_info.enrollment_no);
+        			printf("\t\t COURSE    :  %-10s  ", student_info.student_course);
+					printf("\n\t\t\t NAME           :  %s", student_info.student_name);
+					printf("\t\t\t DOB            :  %s", student_info.dob);
+					printf("\n\n\t\t\t--------------------------------------------------------------------------");
+					printf("\n\t\t\t   SUBJECTS \t\t\t  TOTAL MARKS \t\t OBTAINED MARKS");
+					printf("\n\t\t\t--------------------------------------------------------------------------");
+					for(i = 0; i < 6; i++)
+			        {
+			            printf("\n\t\t\t    %-20s \t\t 100", student_info.subject[i]);
+			            printf("\t\t    %d ", student_info.marks[i]);
+			            totalMarks = totalMarks + student_info.marks[i];
+			        }
+			        float percentage = ((float)totalMarks / 600) * 100;
+			        printf("\n\t\t\t--------------------------------------------------------------------------");
+					printf("\n\t\t\t     TOTAL   \t\t\t\t 600 \t\t   %d", totalMarks);
+					printf("\n\t\t\t--------------------------------------------------------------------------");
+			        if(percentage >= 35.00)
+			        {
+			        	printf("\n\t\t\t     PERCENTAGE   \t\t\t\t\t   %.2f %%", percentage);
+						printf("\n\t\t\t--------------------------------------------------------------------------");
+					}
+					else if(percentage < 35.00 && percentage>1.00)
+					{
+						printf("\n\t\t\t     PERCENTAGE   \t\t\t\t\t %.2f %% [FAIL]", percentage);
+						printf("\n\t\t\t--------------------------------------------------------------------------");
+					}
+					else
+					{
+						printf("\n\t\t\t     PERCENTAGE   \t\t\t\t  RESULT NOT DECLARED");
+						printf("\n\t\t\t--------------------------------------------------------------------------");
+					}
+					
+				}	
+		}
+	fclose(fp);	
+}
+
+void update_student_password(char *id)
+{
+	print_banner();
 }
