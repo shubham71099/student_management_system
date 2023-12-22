@@ -101,8 +101,7 @@ bool take_int_input(int *number)
 	else
 	{
 		printf("\n\t\t\t\t\x1b[38;5;45m Please Enter Number Only... \x1b[0m\n");
-		while (getchar() != '\n');
-		clear_input_buffer();
+		fflush(stdin);
 		return false;
 	}
 }
@@ -110,26 +109,18 @@ bool take_int_input(int *number)
 bool isValidMobileNumber(const char *number)
 {
 	int length = 0, i;
-
-	// Check if the input is NULL
 	if (number == NULL)
 	{
 		return false;
 	}
-
-	// Calculate the length of the string
 	while (number[length] != '\0')
 	{
 		length++;
 	}
-
-	// Check if the length is not more than 10 digits
 	if (length != 10)
 	{
 		return false;
 	}
-
-	// Check that all characters are digits
 	for (i = 0; i < length; i++)
 	{
 		if (!isdigit(number[i]))
@@ -137,7 +128,6 @@ bool isValidMobileNumber(const char *number)
 			return false;
 		}
 	}
-
 	return true;
 }
 
@@ -148,39 +138,33 @@ bool isValidEmail(const char *email)
 	{
 		return false;
 	}
-
 	// Check for the presence of '@' character
 	const char *at = strchr(email, '@');
 	if (at == NULL)
 	{
 		return false;
 	}
-
 	// Check for at least one character before '@'
 	if (at == email)
 	{
 		return false;
 	}
-
 	// Check for at least one character after '@'
 	if (*(at + 1) == '\0')
 	{
 		return false;
 	}
-
 	// Check for a dot (.) character after '@'
 	const char *dot = strchr(at, '.');
 	if (dot == NULL)
 	{
 		return false;
 	}
-
 	// Check for at least one character after the last dot
 	if (*(dot + 1) == '\0')
 	{
 		return false;
 	}
-
 	// Ensure that there are no consecutive dots
 	const char *c;
 	for (c = email; *c; ++c)
@@ -190,7 +174,6 @@ bool isValidEmail(const char *email)
 			return false;
 		}
 	}
-
 	return true;
 }
 
@@ -243,14 +226,12 @@ int isValidName(const char *name)
 {
 	if (name == NULL)
 	{
-		return 0; // NULL pointer, not a valid name
+		return 0;
 	}
-
 	if (name[0] == '\0' || name[0] == '\n')
 	{
-		return 0; // Empty string, not a valid name
+		return 0;
 	}
-
 	return 1;
 }
 
@@ -292,21 +273,20 @@ void home()
 	{
 		print_banner();
 		printf("\n");
-		printf("\n\t\t\t\t\t\t\x1b[38;5;45m +----------------+ \x1b[0m");
-		printf("\n\t\t\t\t\t\t\x1b[38;5;45m |      MENU      | \x1b[0m");
-		printf("\n\t\t\t\t\t\t\x1b[38;5;45m +----------------+ \x1b[0m");
-		printf("\n\n");
-
-		printf("\n\n\t\t\t       (1)  Admin Login ");
-		printf("\n\n\t\t\t       (2)  Teacher Login  ");
-		printf("\n\n\t\t\t       (3)  Student Login  ");
-		printf("\n\n\t\t\t       (4)  Exit       ");
+		printf("\n\t\t\t\t\t\x1b[38;5;45m +--------------------------------------+ \x1b[0m");
+		printf("\n\t\t\t\t\t\x1b[38;5;45m |                MENU                  | \x1b[0m");
+		printf("\n\t\t\t\t\t\x1b[38;5;45m +--------------------------------------+ \x1b[0m");
+		printf("\n\t\t\t\t\t |   Option         |    Login As       |");
+		printf("\n\t\t\t\t\t +--------------------------------------+");
+		printf("\n\t\t\t\t\t |      1           |    Admin          |");
+		printf("\n\t\t\t\t\t |      2           |    Teacher        |");
+		printf("\n\t\t\t\t\t |      3           |    Student        |");
+		printf("\n\t\t\t\t\t |      4           |    Exit           |");
+		printf("\n\t\t\t\t\t +--------------------------------------+");
 		fflush(stdin);
-
 		while (1)
 		{
-			printf("\n\n\t\t\t\x1b[38;5;45m Please select your role from above : \x1b[0m");
-
+			printf("\n\n\n\t\t\t\t\x1b[38;5;45m Please select your role from above : \x1b[0m");
 			if (take_int_input(&choice))
 			{
 				if (choice >= 1 && choice <= 4)
@@ -357,34 +337,32 @@ void admin_home()
 	while (choice != 16)
 	{
 		print_banner();
-		printf("\n");
-		printf("\n\t\t\t\t\t\t\x1b[38;5;45m +----------------+ \x1b[0m");
-		printf("\n\t\t\t\t\t\t\x1b[38;5;45m |      MENU      | \x1b[0m");
-		printf("\n\t\t\t\t\t\t\x1b[38;5;45m +----------------+ \x1b[0m");
-		printf("\n\n");
-
-		printf("\n\t\t\t       (1)  Add New Course ");
-		printf("\n\t\t\t       (2)  Edit Course Details  ");
-		printf("\n\t\t\t       (3)  List of Courses  ");
-		printf("\n\t\t\t       (4)  Add New Teacher    ");
-		printf("\n\t\t\t       (5)  Edit Teacher Details   ");
-		printf("\n\t\t\t       (6)  List of Teachers  ");
-		printf("\n\t\t\t       (7)  Delete Teacher Details  ");
-		printf("\n\t\t\t       (8)  Add New Student  ");
-		printf("\n\t\t\t       (9)  Edit Student Details  ");
-		printf("\n\t\t\t       (10) Search Student Details  ");
-		printf("\n\t\t\t       (11) List of Students ");
-		printf("\n\t\t\t       (12) Delete Student Details  ");
-		printf("\n\t\t\t       (13) Fees Payment  ");
-		printf("\n\t\t\t       (14) Fees Pending List  ");
-		printf("\n\t\t\t       (15) Update Userid & Password ");
-		printf("\n\t\t\t       (16) Exit       ");
+		printf("\n\t\t\t\t\t\x1b[38;5;45m +-------------------------------------+ \x1b[0m");
+		printf("\n\t\t\t\t\t\x1b[38;5;45m |           ADMIN DASHBOARD           | \x1b[0m");
+		printf("\n\t\t\t\t\t\x1b[38;5;45m +-------------------------------------+ \x1b[0m");
+		printf("\n\t\t\t\t\t |   No. |        Options              |");
+		printf("\n\t\t\t\t\t +-------------------------------------+");
+		printf("\n\t\t\t\t\t |    1  | Add New Course              |");	
+		printf("\n\t\t\t\t\t |    2  | Edit Course Details         |");
+		printf("\n\t\t\t\t\t |    3  | List of Courses             |");
+		printf("\n\t\t\t\t\t |    4  | Add New Teacher             |");
+		printf("\n\t\t\t\t\t |    5  | Edit Teacher Details        |");
+		printf("\n\t\t\t\t\t |    6  | List of Teachers            |");
+		printf("\n\t\t\t\t\t |    7  | Delete Teacher Details      |");
+		printf("\n\t\t\t\t\t |    8  | Add New Student             |");
+		printf("\n\t\t\t\t\t |    9  | Edit Student Details        |");
+		printf("\n\t\t\t\t\t |   10  | Search Student Details      |");
+		printf("\n\t\t\t\t\t |   11  | List of Students            |");
+		printf("\n\t\t\t\t\t |   12  | Delete Student Details      |");
+		printf("\n\t\t\t\t\t |   13  | Fees Payment                |");
+		printf("\n\t\t\t\t\t |   14  | Fees Pending List           |");
+		printf("\n\t\t\t\t\t |   15  | Update Userid & Password    |");
+		printf("\n\t\t\t\t\t |   16  | Exit                        |");
+		printf("\n\t\t\t\t\t +-------------------------------------+");
 		fflush(stdin);
-
 		while (1)
 		{
-			printf("\n\n\t\t\t\x1b[38;5;45m Enter your choice : \x1b[0m");
-
+			printf("\n\n\t\t\t\t\x1b[38;5;45m Enter your choice : \x1b[0m");
 			if (take_int_input(&choice))
 			{
 				if (choice >= 1 && choice <= 16)
@@ -408,9 +386,7 @@ void show_admin_actions(int action)
 	char time_string[50];
 
 	time(&current_time);
-
 	time_info = localtime(&current_time);
-
 	strftime(time_string, sizeof(time_string), "%d-%m-%Y %H:%M", time_info);
 	fflush(stdin);
 	switch (action)
@@ -550,28 +526,22 @@ int add_course()
 	}
 	else
 	{
-
 		while (fread(&course_info, sizeof(struct course), 1, fp) == 1)
 		{
 
 			last_course_id = course_info.course_id;
 		}
-
 		fclose(fp);
 	}
 
 	fp = fopen("courseinfo.bin", "ab");
-
 	fflush(stdin);
-
 	if (fp == NULL)
 	{
 		fprintf(stderr, "\t\t\t\n Can't Open");
 		return 1;
 	}
-
 	course_info.course_id = last_course_id + 1;
-
 	while (1)
 	{
 		printf("\n\n\n\t\t\tEnter Course Name  : ");
@@ -607,7 +577,6 @@ int add_course()
 	}
 
 	fwrite(&course_info, sizeof(struct course), 1, fp);
-
 	fclose(fp);
 	printf("\n\n\t\t\t--------------------------------------------------------");
 	printf("\n\n\t\t\t\t  Course ID        :   \x1b[38;5;45m   %d \x1b[0m", course_info.course_id);
@@ -669,7 +638,7 @@ void edit_course()
 			printf("\n\t\t\t--------------------------------------------------------------------");
 
 			printf("\n\t\t\tEnter course new name: ");
-			fflush(stdin); // Flush any remaining characters in the input buffer
+			fflush(stdin);
 			fgets(course_info.course_name, sizeof(course_info.subject[i]), stdin);
 
 			while (1)
@@ -735,7 +704,6 @@ void view_course()
 
 	while (fread(&course_info, sizeof(struct course), 1, fp))
 	{
-
 		printf("\n\t\t\t\t   Course ID         :    %d", course_info.course_id);
 		printf("\n\t\t\t\t   Course Name       :   \x1b[38;5;45m %s \x1b[0m", course_info.course_name);
 		printf("\n\t\t\t\t   Course Fees       :    %d", course_info.fees);
@@ -752,49 +720,37 @@ void view_course()
 void add_teacher()
 {
 	print_banner();
-
 	time_t current_time;
 	struct tm *time_info;
 	char time_string[50];
-
 	time(&current_time);
-
 	time_info = localtime(&current_time);
-
 	strftime(time_string, sizeof(time_string), "%d-%m-%Y", time_info);
-
 	int i, selected_course, last_teacher_id = 100;
 	char teacher_mobile[15];
 	char teacher_email[100], teacher_name[30];
 	struct course courses[30];
 	FILE *fp = NULL;
 	struct teacher teacher_info;
-
 	printf("\n");
 	printf("\n\t\t\t\t\t\x1b[38;5;45m      +--------------------------+ \x1b[0m");
 	printf("\n\t\t\t\t\t\x1b[38;5;45m      |      Add New Teacher     | \x1b[0m");
 	printf("\n\t\t\t\t\t\x1b[38;5;45m      +--------------------------+ \x1b[0m");
-
 	fp = fopen("teacherinfo.bin", "rb");
-
 	if (fp == NULL)
 	{
 		last_teacher_id = 100;
 	}
 	else
 	{
-
 		while (fread(&teacher_info, sizeof(struct teacher), 1, fp) == 1)
 		{
 
 			last_teacher_id = teacher_info.teacher_id;
 		}
-
 		fclose(fp);
 	}
-
 	fp = fopen("courseinfo.bin", "rb");
-
 	if (fp == NULL)
 	{
 		perror("Error opening file");
@@ -806,7 +762,6 @@ void add_teacher()
 	{
 		(numCourses)++;
 	}
-
 	fclose(fp);
 
 	fp = fopen("teacherinfo.bin", "ab");
@@ -814,12 +769,10 @@ void add_teacher()
 	teacher_info.teacher_id = last_teacher_id + 1;
 	strcpy(teacher_info.teacher_password, "teacher");
 	sscanf(time_string, "%10s", teacher_info.teacher_doj);
-
 	if (fp == NULL)
 	{
 		fprintf(stderr, "\t\t\t\n Can't Open");
 	}
-
 	for (i = 0; i < numCourses; i++)
 	{
 		printf("\n\t\t\t     (%d) %s ", i + 1, courses[i].course_name);
@@ -828,7 +781,6 @@ void add_teacher()
 	while (1)
 	{
 		printf("\n\n\t\t\t Select Course From Above List : ");
-
 		if (take_int_input(&selected_course))
 		{
 			if (selected_course >= 1 && selected_course <= numCourses)
@@ -866,7 +818,6 @@ void add_teacher()
 		printf("\n\t\t\t Email            :  ");
 		if (scanf("%99s", teacher_email) == 1)
 		{ // Limit input to 99 characters
-			// Validation of the email address using isValidEmail function
 			if(isValidEmail(teacher_email))
             {
                 if (unique_email(1,teacher_email))
@@ -888,8 +839,6 @@ void add_teacher()
 		{
 			printf("Error reading email address\n");
 		}
-
-		// Clear the input buffer
 		int c;
 		while ((c = getchar()) != '\n' && c != EOF)
 			;
@@ -897,11 +846,9 @@ void add_teacher()
 
 	while (1)
 	{
-
 		printf("\n\t\t\t Mobile           :  ");
 		if (scanf("%14s", teacher_mobile) == 1)
 		{
-			// Validation of the mobile number using your isValidMobileNumber function
 			if (isValidMobileNumber(teacher_mobile))
 			{
 				strcpy(teacher_info.teacher_mobile, teacher_mobile);
@@ -912,7 +859,6 @@ void add_teacher()
 				printf("\n\t\t\t\t\x1b[38;5;45m Please Enter 10 Digit Number Only \x1b[0m\n");
 			}
 		}
-
 		fflush(stdin);
 	}
 
@@ -931,7 +877,6 @@ void add_teacher()
 	printf("\n\n\t\t\t Teacher Login ID  : \x1b[38;5;45m %s \x1b[0m", teacher_info.teacher_email);
 	printf("\n\t\t\t Default Password  : \x1b[38;5;45m %s \x1b[0m", teacher_info.teacher_password);
 	printf("\n\n\t\t\t--------------------------------------------------------");
-
 	fclose(fp);
 }
 
@@ -1215,14 +1160,13 @@ void add_student()
 
 		fclose(fp);
 	}
+	
 	fp = fopen("courseinfo.bin", "rb");
-
 	int numCourses = 0;
 	while (fread(&courses[numCourses], sizeof(struct course), 1, fp) == 1)
 	{
 		(numCourses)++;
 	}
-
 	fclose(fp);
 
 	fp = fopen("studentinfo.bin", "ab");
@@ -1325,7 +1269,6 @@ void add_student()
 		fflush(stdin);
 		if (scanf("%14s", student_mobile) == 1)
 		{
-			// Validation of the mobile number using your isValidMobileNumber function
 			if (isValidMobileNumber(student_mobile))
 			{
 				strcpy(student_info.student_mobile, student_mobile);
@@ -1427,12 +1370,10 @@ void edit_student()
 
 			while (1)
 			{
-
 				printf("\n\t\t\tEnter New Mobile No.     : ");
 				fflush(stdin);
 				if (scanf("%14s", student_mobile) == 1)
 				{
-					// Validation of the mobile number using your isValidMobileNumber function
 					if (isValidMobileNumber(student_mobile))
 					{
 						strcpy(student_info.student_mobile, student_mobile);
@@ -1452,7 +1393,6 @@ void edit_student()
 				printf("\n\t\t\tEnter New Email ID       : ");
 				if (scanf("%99s", student_email) == 1)
 				{ // Limit input to 99 characters
-					// Validation of the email address using isValidEmail function
 					if (isValidEmail(student_email))
 					{
 						strcpy(student_info.student_email, student_email);
@@ -1477,7 +1417,6 @@ void edit_student()
 			printf("\n\t\t\tNew Address              : ");
 			fflush(stdin);
 			scanf("%50[^\n]", student_info.student_address);
-
 			found = 1;
 		}
 		fwrite(&student_info, sizeof(struct student), 1, fp1);
@@ -1519,7 +1458,7 @@ void search_student()
 
 	fp = fopen("studentinfo.bin", "rb");
 
-	printf("\n\t\t\t       (1)  Search By Enrollment No. ");
+	printf("\n\n\t\t\t       (1)  Search By Enrollment No. ");
 	printf("\n\t\t\t       (2)  Search By Student Name  ");
 	while (1)
 	{
@@ -1568,9 +1507,8 @@ void search_student()
 				printf("\n\n\t\t\tEnter Student Name : ");
 				scanf(" %[^\n]", student_name);
 
-				// Remove trailing newline character from student_name
+				// Remove newline character from student_name
 				strtok(student_name, "\n");
-
 				while (fread(&student_info, sizeof(struct student), 1, fp))
 				{
 					strtok(student_info.student_name, "\n");
@@ -1614,7 +1552,6 @@ void search_student()
 			}
 		}
 	}
-
 	fclose(fp);
 }
 void view_student()
@@ -1632,11 +1569,9 @@ void view_student()
 	{
 		(numCourses)++;
 	}
-
 	fclose(fp);
 
 	fp = fopen("studentinfo.bin", "rb");
-
 	if (fp == NULL)
 	{
 		printf("\n\n\n\n");
@@ -1679,7 +1614,6 @@ void view_student()
 	}
 
 	printf("\n\t\t\t\t\t\x1b[38;5;45m Student List \x1b[0m\n\n");
-
 	while (fread(&student_info, sizeof(struct student), 1, fp))
 	{
 		if (strcmp(student_info.student_course, courses[selected_course - 1].course_name) == 0)
@@ -1693,18 +1627,11 @@ void view_student()
 			printf("\n\t\t\t\t   Email-id           :    %s ", student_info.student_email);
 			printf("\n\t\t\t\t   Fees Status        :    %s", student_info.fees);
 			printf("\n\t\t\t\t   Address            :    %s", student_info.student_address);
-			//					int i;
-			//					for (i = 0; i < 6; i++)
-			//					{
-			//						printf("\n\t\t %s :",student_info.subject[i]);
-			//						printf(" %d ",student_info.marks[i]);
-			//	                }
 			printf("\n");
 			printf("\n\t\t\t\t____________________________________________________________ \n");
 		}
 	}
 	printf("\n\t\t\t\t Total Student  : %d\n", count);
-
 	fclose(fp);
 }
 void delete_student()
@@ -1721,7 +1648,6 @@ void delete_student()
 	}
 
 	fp1 = fopen("temp.bin", "wb");
-
 	printf("\n");
 	printf("\n\t\t\t\t\t\x1b[38;5;45m      +----------------------------+ \x1b[0m");
 	printf("\n\t\t\t\t\t\x1b[38;5;45m      |   Delete Student Details   | \x1b[0m");
@@ -1730,7 +1656,6 @@ void delete_student()
 	fflush(stdin);
 	printf("\n\n\n\t\t\tEnter Enrollment No. : ");
 	scanf("%d", &enrollment_no);
-
 	while (fread(&student_info, sizeof(struct student), 1, fp))
 	{
 		if (student_info.enrollment_no == enrollment_no)
@@ -1760,7 +1685,6 @@ void delete_student()
 		char confirm;
 		printf("\n\t\t\t   Do you want to delete this Student ? (Y/N): ");
 		scanf(" %c", &confirm);
-
 		if (confirm == 'y' || confirm == 'Y')
 		{
 			remove("studentinfo.bin");
@@ -1798,20 +1722,17 @@ void fees_payment()
 	printf("\n\t\t\t\t\t\x1b[38;5;45m      +---------------------------+ \x1b[0m");
 
 	fp = fopen("studentinfo.bin", "rb");
-
 	if (fp == NULL)
 	{
 		fprintf(stderr, "\n\n\n\n\t\t\t Student List is Empty \n");
 	}
 
 	fp1 = fopen("temp.bin", "wb");
-
 	fflush(stdin);
 	printf("\n\n\n\t\t\tEnter Enrollment No. : ");
 	scanf("%d", &enrollment_no);
 
 	fflush(stdin);
-
 	while (fread(&student_info, sizeof(struct student), 1, fp))
 	{
 		if (student_info.enrollment_no == enrollment_no)
@@ -1902,7 +1823,6 @@ void fees_pending_list()
     {
         (numCourses)++;
     }
-
     fclose(fp_courses);
 
     printf("\n");
@@ -1917,7 +1837,6 @@ void fees_pending_list()
         return;
     }
 
-    
     for (i = 0; i < numCourses; i++)
     {
         printf("\n\t\t\t     (%d) %s ", i + 1, courses[i].course_name);
@@ -1926,7 +1845,6 @@ void fees_pending_list()
     while (1)
     {
         printf("\n\n\t\t\t Select Course From Above List : ");
-
         if (take_int_input(&selected_course))
         {
             if (selected_course >= 1 && selected_course <= numCourses)
@@ -2003,9 +1921,9 @@ void adminlogin()
 	printf("\n\t\t\t\t\t\x1b[38;5;45m      |        ADMIN LOGIN        | \x1b[0m");
 	printf("\n\t\t\t\t\t\x1b[38;5;45m      +---------------------------+ \x1b[0m");
 
-	printf("\n\n\n\t\t\t Enter Username : ");
+	printf("\n\n\n\n\t\t\t\t Enter Username : ");
 	scanf("%s", &id);
-	printf("\n\t\t\t Enter Password : ");
+	printf("\n\t\t\t\t Enter Password : ");
 	getPassword(pass, sizeof(pass));
 	if ((strcmp(user.username, id) == 0) && (strcmp(user.password, pass) == 0))
 	{
@@ -2013,10 +1931,9 @@ void adminlogin()
 	}
 	else
 	{
-		printf("\n\n\t\t\x1b[33m !!! Wrond username or password... \x1b[0m");
+		printf("\n\n\n\t\t\t\t\x1b[33m !!! Wrond username or password... \x1b[0m");
 		getch();
 		system("cls");
-		adminlogin();
 	}
 	fclose(fp);
 }
@@ -2080,7 +1997,6 @@ void updateadmindata()
 	fseek(fp, 0, SEEK_SET);
 	fwrite(&user, sizeof(struct login), 1, fp);
 	fclose(fp);
-
 	printf("\n\n\n\t\t\t\x1b[33m Admin account updated successfully! Press any key to continue...\x1b[0m");
 }
 
@@ -2105,9 +2021,9 @@ void teacherlogin()
     printf("\n\t\t\t\t\t\x1b[38;5;45m      |       TEACHER LOGIN       | \x1b[0m");
     printf("\n\t\t\t\t\t\x1b[38;5;45m      +---------------------------+ \x1b[0m");
 
-    printf("\n\n\n\t\t\t Enter Email-id : ");
-    scanf("%19s", id);  // Limit the input length to prevent buffer overflow
-    printf("\n\t\t\t Enter Password : ");
+    printf("\n\n\n\n\t\t\t\t Enter Email-id : ");
+    scanf("%19s", id);  // Limit the input to prevent buffer overflow
+    printf("\n\t\t\t\t Enter Password : ");
     getPassword(pass, sizeof(pass));
 
     while (fread(&teacher_info, sizeof(struct teacher), 1, fp) == 1)
@@ -2124,7 +2040,7 @@ void teacherlogin()
     }
     else
     {
-        printf("\n\n\t\t\x1b[33m Wrong username or password... \x1b[0m");
+        printf("\n\n\n\t\t\t\t\x1b[33m !!! Wrong username or password... \x1b[0m");
         getch();
     }
     fclose(fp);
@@ -2136,16 +2052,10 @@ void teacher_home(char *id)
 	struct teacher teacher_info;
 	FILE *fp;
 	int choice;
-	
 	while (choice != 4)
 	{	
 		print_banner();
 		fp = fopen("teacherinfo.bin", "rb");
-		printf("\n");
-		printf("\n\t\t\t\t\t\t\x1b[38;5;45m +----------------+ \x1b[0m");
-		printf("\n\t\t\t\t\t\t\x1b[38;5;45m |      MENU      | \x1b[0m");
-		printf("\n\t\t\t\t\t\t\x1b[38;5;45m +----------------+ \x1b[0m");
-			
 		while (fread(&teacher_info, sizeof(struct teacher), 1, fp))
 		{
 			if (strcmp(teacher_info.teacher_email, id) == 0)
@@ -2154,10 +2064,16 @@ void teacher_home(char *id)
 			}
 		}
 		fclose(fp);
-		printf("\n\n\n\t\t\t       (1)  View Profile ");
-		printf("\n\n\t\t\t       (2)  Add Student Marks       ");
-		printf("\n\n\t\t\t       (3)  Change Password  ");
-		printf("\n\n\t\t\t       (4)  Exit       ");
+		printf("\n\t\t\t\t\t +------------------------------+ \x1b[0m");
+		printf("\n\t\t\t\t\t |      TEACHER DASHBOARD       | \x1b[0m");
+		printf("\n\t\t\t\t\t +------------------------------+ \x1b[0m");
+		printf("\n\t\t\t\t\t |  No. |      Options          |");
+		printf("\n\t\t\t\t\t +------------------------------+");
+		printf("\n\t\t\t\t\t |   1  |   View Profile        |");	
+		printf("\n\t\t\t\t\t |   2  |   Add Student Marks   |");
+		printf("\n\t\t\t\t\t |   3  |   Change Password     |");
+		printf("\n\t\t\t\t\t |   4  |   Exit                |");
+		printf("\n\t\t\t\t\t +------------------------------+");
 		fflush(stdin);
 		while (1)
 		{
@@ -2302,9 +2218,17 @@ void add_student_marks(char *id)
 	            printf("\n\t\t\t   Name              :   \x1b[38;5;45m %s \x1b[0m", student_info.student_name);
 	            printf("\t\t\t   Department        :   \x1b[38;5;45m %s \x1b[0m", student_info.student_course);
 	            printf("\n");
+				printf("\n\t\t\t   ----------------------- MARKS -------------------------   ");    
 	            for (i = 0; i < 6; i++) 
 				{
-	                printf("\n\t\t\t    %s  : %d", student_info.subject[i],student_info.marks[i]);
+					if(student_info.marks[i]<0)
+					{
+						printf("\n\t\t\t   %-20s \t\t    :  N/A", student_info.subject[i]);
+					}
+					else
+					{
+						printf("\n\t\t\t    %-20s \t\t   :  %d", student_info.subject[i],student_info.marks[i]);
+					} 
 	            }
 	            printf("\n\t\t\t____________________________________________________________ \n");
 	
@@ -2390,11 +2314,10 @@ void studentlogin()
     printf("\n\t\t\t\t\t\x1b[38;5;45m      |       STUDENT LOGIN       | \x1b[0m");
     printf("\n\t\t\t\t\t\x1b[38;5;45m      +---------------------------+ \x1b[0m");
 
-    printf("\n\n\n\t\t\t Enter Email-id : ");
+    printf("\n\n\n\n\t\t\t\t Enter Email-id : ");
     scanf("%19s", id);
-    printf("\n\t\t\t Enter Password : ");
+    printf("\n\t\t\t\t Enter Password : ");
     getPassword(pass, sizeof(pass));
-
     while (fread(&student_info, sizeof(struct student), 1, fp) == 1)
     {
         if ((strcmp(student_info.student_email, id) == 0) && (strcmp(student_info.student_password, pass) == 0))
@@ -2409,8 +2332,7 @@ void studentlogin()
     }
     else
     {
-        printf("\n\n\t\t\x1b[33m Wrong username or password... \x1b[0m");
-        getch();       
+        printf("\n\n\n\t\t\t\t\x1b[33m !!! Wrong username or password... \x1b[0m");       
     }
     fclose(fp);
 }
@@ -2425,12 +2347,7 @@ void student_home(char *id)
 	while (choice != 4)
 	{	
 		print_banner();
-		fp = fopen("studentinfo.bin", "rb");
-		printf("\n");
-		printf("\n\t\t\t\t\t\t\x1b[38;5;45m +----------------+ \x1b[0m");
-		printf("\n\t\t\t\t\t\t\x1b[38;5;45m |      MENU      | \x1b[0m");
-		printf("\n\t\t\t\t\t\t\x1b[38;5;45m +----------------+ \x1b[0m");
-			
+		fp = fopen("studentinfo.bin", "rb");			
 		while (fread(&student_info, sizeof(struct student), 1, fp))
 		{
 			if (strcmp(student_info.student_email, id) == 0)
@@ -2439,10 +2356,16 @@ void student_home(char *id)
 			}
 		}
 		fclose(fp);
-		printf("\n\n\n\t\t\t       (1)  View Profile ");
-		printf("\n\n\t\t\t       (2)  View Result       ");
-		printf("\n\n\t\t\t       (3)  Change Password  ");
-		printf("\n\n\t\t\t       (4)  Exit       ");
+		printf("\n\t\t\t\t\t +------------------------------+");
+		printf("\n\t\t\t\t\t |      STUDENT DASHBOARD       |");
+		printf("\n\t\t\t\t\t +------------------------------+");
+		printf("\n\t\t\t\t\t |  No. |      Options          |");
+		printf("\n\t\t\t\t\t +------------------------------+");
+		printf("\n\t\t\t\t\t |   1  |   View Profile        |");	
+		printf("\n\t\t\t\t\t |   2  |   View Result         |");
+		printf("\n\t\t\t\t\t |   3  |   Change Password     |");
+		printf("\n\t\t\t\t\t |   4  |   Exit                |");
+		printf("\n\t\t\t\t\t +------------------------------+");
 		fflush(stdin);
 		while (1)
 		{
@@ -2544,14 +2467,30 @@ void view_student_result(char *id)
 					printf("\n\t\t\t--------------------------------------------------------------------------");
 					for(i = 0; i < 6; i++)
 			        {
-			            printf("\n\t\t\t    %-20s \t\t 100", student_info.subject[i]);
-			            printf("\t\t    %d ", student_info.marks[i]);
-			            totalMarks = totalMarks + student_info.marks[i];
+			        	printf("\n\t\t\t    %-20s \t\t 100", student_info.subject[i]);
+			        	if(student_info.marks[i] == -1)
+			        	{
+			        		printf("\t\t    N/A ");
+						}
+						else
+						{
+							printf("\t\t    %d ", student_info.marks[i]);
+						}
+						totalMarks = totalMarks + student_info.marks[i];
+			            
 			        }
 			        float percentage = ((float)totalMarks / 600) * 100;
 			        printf("\n\t\t\t--------------------------------------------------------------------------");
-					printf("\n\t\t\t     TOTAL   \t\t\t\t 600 \t\t   %d", totalMarks);
+			        if(totalMarks < 0)
+			        {
+			        	printf("\n\t\t\t     TOTAL   \t\t\t\t 600 \t\t    N/A");
+					}
+					else
+					{
+						printf("\n\t\t\t     TOTAL   \t\t\t\t 600 \t\t   %d", totalMarks);	
+					}
 					printf("\n\t\t\t--------------------------------------------------------------------------");
+					
 			        if(percentage >= 35.00)
 			        {
 			        	printf("\n\t\t\t     PERCENTAGE   \t\t\t\t\t   %.2f %%", percentage);
@@ -2576,4 +2515,31 @@ void view_student_result(char *id)
 void update_student_password(char *id)
 {
 	print_banner();
+	struct student student_info;
+    FILE *fp;
+    fp = fopen("studentinfo.bin", "r+b");
+    printf("\n");
+    printf("\n\t\t\t\t\t\t\x1b[38;5;45m +---------------------+ \x1b[0m");
+    printf("\n\t\t\t\t\t\t\x1b[38;5;45m |   CHANGE PASSWORD   | \x1b[0m");
+    printf("\n\t\t\t\t\t\t\x1b[38;5;45m +---------------------+ \x1b[0m");
+
+    if (fp == NULL) 
+	{
+        fprintf(stderr, "\n\n\n\n\t\t\t Student's List is Empty \n");
+        return;
+    }
+    while (fread(&student_info, sizeof(struct student), 1, fp) == 1) 
+	{
+        if (strcmp(student_info.student_email, id) == 0) 
+		{
+			printf("\n\n\t\t\t Welcome, \x1b[38;5;45m %s \x1b[0m", student_info.student_name);
+        	printf("\n\n\n\t\t\tEnter new password: ");
+			getPassword(student_info.student_password, sizeof(student_info.student_password));
+            fseek(fp, -(long int)sizeof(struct student), SEEK_CUR);  // Move the file pointer back
+            fwrite(&student_info, sizeof(struct student), 1, fp);
+            break;
+        }
+    }
+    fclose(fp);
+    printf("\n\n\n\t\t\t\x1b[38;5;45m Password Updated Successfully !!  \x1b[0m");
 }
